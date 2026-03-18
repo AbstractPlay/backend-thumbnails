@@ -178,13 +178,13 @@ package:
     - fonts/**
 
 layers:
-  abstractplayGameslib:
-    path: .serverless/layers/abstractplay-gameslib
-    name: abstractplay-gameslib-${sls:stage}
-    description: "Layer for @abstractplay/gameslib"
-    compatibleRuntimes:
-      - nodejs20.x
-    retain: false
+  # abstractplayGameslib:
+  #   path: .serverless/layers/abstractplay-gameslib
+  #   name: abstractplay-gameslib-${sls:stage}
+  #   description: "Layer for @abstractplay/gameslib"
+  #   compatibleRuntimes:
+  #     - nodejs20.x
+  #   retain: false
   abstractplayRenderer:
     path: .serverless/layers/abstractplay-renderer
     name: abstractplay-renderer-${sls:stage}
