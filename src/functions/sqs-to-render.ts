@@ -9,8 +9,7 @@ import {
 import { Readable } from "stream";
 import pkg from "@abstractplay/renderer";
 import type { IRenderOptions, APRenderRep } from "@abstractplay/renderer";
-const renderer: any = (pkg as any).default ?? pkg;
-const { render, addPrefix } = renderer;
+const { render, addPrefix } = (pkg as any).addPrefix !== undefined ? pkg : ((pkg as any).default ?? pkg);
 import { Buffer } from "node:buffer";
 import { customAlphabet } from "nanoid";
 const genPrefix = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5);
