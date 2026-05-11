@@ -12,15 +12,16 @@ const require = createRequire(import.meta.url);
 const pkg = require("@abstractplay/renderer");
 import type { IRenderOptions, APRenderRep } from "@abstractplay/renderer";
 
-const renderer: any = pkg.addPrefix ? pkg : (pkg.default?.addPrefix ? pkg.default : (pkg.default ?? pkg));
+// Unpack CommonJS/ESM interop robustly
+const renderer: any = pkg?.addPrefix ? pkg : (pkg?.default?.addPrefix ? pkg.default : (pkg?.default ?? pkg));
 const { render, addPrefix } = renderer;
 
-// Safety check to catch the issue before the loop starts
+// Safety check: If this fails, the deployment is using an outdated/bundled version of the package.
 if (typeof addPrefix !== 'function') {
-    console.error("FATAL: 'addPrefix' is not a function.");
-    console.error("Available keys on extracted renderer:", Object.keys(renderer));
-    console.error("Raw imported package structure:", JSON.stringify(pkg, (k, v) => typeof v === 'function' ? '[Function]' : v));
-    throw new Error(`@abstractplay/renderer version mismatch: 'addPrefix' missing. Found type: ${typeof addPrefix}`);
+    const keys = Object.keys(renderer || {});
+    const msg = `@abstractplay/renderer version mismatch: 'addPrefix' missing. Found: ${keys.join(', ')}`;
+    console.error("FATAL:", msg);
+    throw new Error(msg);
 }
 
 import { Buffer } from "node:buffer";
@@ -75,15 +76,12 @@ export const handler = async (event: SQSEvent): Promise<void> => {
     const obj = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
     const data = await streamToString(obj.Body as Readable);
     console.log(`Fetched the following JSON:\n${data}`);
-    let aprender: APRenderRep|APRenderRep[];
-    if (typeof(data) === "string") {
-        aprender = JSON.parse(data) as APRenderRep|APRenderRep[];
-        if (typeof(aprender) === "string") {
-            aprender = JSON.parse(aprender) as APRenderRep|APRenderRep[];
-        }
-    } else {
-        aprender = data as APRenderRep|APRenderRep[];
+    let aprender = JSON.parse(data) as APRenderRep | APRenderRep[];
+    // Handle double-encoded JSON strings
+    if (typeof aprender === "string") {
+        aprender = JSON.parse(aprender) as APRenderRep | APRenderRep[];
     }
+
     if (Array.isArray(aprender)) {
         aprender = aprender[aprender.length - 1] as APRenderRep;
     }

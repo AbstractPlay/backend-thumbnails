@@ -43,7 +43,8 @@ async function createLayer(layerName, packagesToInclude) {
 
   // 3. Install only production dependencies
   console.log(`Installing dependencies for ${layerName} layer...`);
-  execSync('npm install --omit=dev', { cwd: nodejsDir, stdio: 'inherit' });
+  // Force npm to check the registry and ignore the local cache/lockfile for dependencies
+  execSync('npm install --omit=dev --no-package-lock --prefer-online', { cwd: nodejsDir, stdio: 'inherit' });
 
   // WORKAROUND: If building the gameslib layer, forcefully remove renderer dependencies.
   // The "correct" fix is to publish a new version of gameslib with renderer as a devDependency.
