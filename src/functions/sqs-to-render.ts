@@ -9,8 +9,14 @@ import {
 import { Readable } from "stream";
 import pkg from "@abstractplay/renderer";
 import type { IRenderOptions, APRenderRep } from "@abstractplay/renderer";
-const renderer: any = (pkg as any).addPrefix ? pkg : ((pkg as any).default?.addPrefix ? (pkg as any).default : ((pkg as any).default ?? pkg));
+
+let renderer: any = pkg;
+// Greedy unwrap: Keep looking into .default as long as addPrefix isn't found
+while (renderer && !renderer.addPrefix && renderer.default) {
+    renderer = renderer.default;
+}
 const { render, addPrefix } = renderer;
+
 import { Buffer } from "node:buffer";
 import { customAlphabet } from "nanoid";
 const genPrefix = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 5);
