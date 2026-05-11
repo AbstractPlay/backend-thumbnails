@@ -7,15 +7,21 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
-import pkg from "@abstractplay/renderer";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const pkg = require("@abstractplay/renderer");
 import type { IRenderOptions, APRenderRep } from "@abstractplay/renderer";
 
-let renderer: any = pkg;
-// Greedy unwrap: Keep looking into .default as long as addPrefix isn't found
-while (renderer && !renderer.addPrefix && renderer.default) {
-    renderer = renderer.default;
-}
+const renderer: any = pkg.addPrefix ? pkg : (pkg.default?.addPrefix ? pkg.default : (pkg.default ?? pkg));
 const { render, addPrefix } = renderer;
+
+// Safety check to catch the issue before the loop starts
+if (typeof addPrefix !== 'function') {
+    console.error("FATAL: 'addPrefix' is not a function.");
+    console.error("Available keys on extracted renderer:", Object.keys(renderer));
+    console.error("Raw imported package structure:", JSON.stringify(pkg, (k, v) => typeof v === 'function' ? '[Function]' : v));
+    throw new Error(`@abstractplay/renderer version mismatch: 'addPrefix' missing. Found type: ${typeof addPrefix}`);
+}
 
 import { Buffer } from "node:buffer";
 import { customAlphabet } from "nanoid";
