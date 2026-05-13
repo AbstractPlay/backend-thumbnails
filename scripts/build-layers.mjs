@@ -52,4 +52,16 @@ execSync('npm install --omit=dev --no-package-lock', {
     stdio: 'inherit'
 });
 
+// 5. Direct copy the local versions of our libraries from root node_modules.
+// This ensures that the @development (or @latest) code that the workflow just
+// installed in the root is exactly what ends up in the layer, bypassing any
+// version resolution issues during the sub-folder npm install.
+const packagesToOverride = ['@abstractplay/renderer', '@abstractplay/gameslib'];
+packagesToOverride.forEach(name => {
+    const src = path.resolve(projectRoot, 'node_modules', name);
+    const dest = path.resolve(rendererNodejsPath, 'node_modules', name);
+    console.log(`Syncing local code for ${name} into layer...`);
+    copySync(src, dest, { overwrite: true });
+});
+
 console.log(`Layer built successfully at ${rendererLayerPath}`);
