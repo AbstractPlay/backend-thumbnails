@@ -38,26 +38,16 @@ jobs:
     #     cat > env.yml << EOF
     #     ${{ secrets.ENV }}
     #     EOF
-    - name: Clean node_modules and package-lock.json
-      run: |
-        rm -rf node_modules
-        rm -f package-lock.json
 
     - name: Create .npmrc
       run: echo "@abstractplay:registry=https://npm.pkg.github.com/" > .npmrc
     - run: echo "//npm.pkg.github.com/:_authToken=${{secrets.PAT_READ_PACKAGES}}" >> .npmrc
 
-    - name: Install development renderer
-      run: npm i @abstractplay/renderer@development
+    - name: Install Dependencies
+      run: npm install
 
-    - name: Install development gameslib
-      run: npm i @abstractplay/gameslib@development
-
-    - name: Dump package-lock.json
-      run: cat package-lock.json
-
-    - name: Install all dependencies
-      run: npm ci
+    - name: Apply Development Overrides
+      run: npm i @abstractplay/renderer@development @abstractplay/gameslib@development
 
     - name: Set CI version
       run: npm version prerelease --preid=ci-$GITHUB_RUN_ID --no-git-tag-version

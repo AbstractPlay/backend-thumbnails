@@ -14,32 +14,42 @@ const serverlessDir = path.resolve(projectRoot, '.serverless');
 // Define paths for the renderer layer
 const rendererLayerPath = path.resolve(serverlessDir, 'layers', 'abstractplay-renderer');
 const rendererNodejsPath = path.resolve(rendererLayerPath, 'nodejs');
-const rendererNodeModulesPath = path.resolve(rendererNodejsPath, 'node_modules');
 
 // Ensure the target directory exists and is clean
 removeSync(rendererLayerPath); // Clean up any previous layer content
 ensureDirSync(rendererNodejsPath);
 
-// 1. Install public dependencies via npm to handle transitive dependencies correctly (like follow-redirects)
-console.log('Installing puppeteer-core and @sparticuz/chromium in layer...');
-execSync('npm install puppeteer-core@^24.33.0 @sparticuz/chromium@^143.0.0 --no-package-lock --omit=dev', {
+// 1. Read root package.json to get the versions determined by the workflow
+const pkg = fsExtra.readJsonSync(path.join(projectRoot, 'package.json'));
+
+// 2. Create a subset package.json for the layer.
+// This ensures we install the packages AND all their transitive dependencies correctly.
+const layerPackages = ['@abstractplay/renderer', '@abstractplay/gameslib', 'puppeteer-core', '@sparticuz/chromium'];
+const layerPkg = {
+    name: 'abstractplay-renderer-layer',
+    version: '1.0.0',
+    dependencies: {}
+};
+
+layerPackages.forEach(name => {
+    if (pkg.dependencies && pkg.dependencies[name]) {
+        layerPkg.dependencies[name] = pkg.dependencies[name];
+    }
+});
+
+fsExtra.writeJsonSync(path.join(rendererNodejsPath, 'package.json'), layerPkg);
+
+// 3. Copy .npmrc so npm can authenticate for your private GitHub packages
+if (fsExtra.existsSync(path.join(projectRoot, '.npmrc'))) {
+    copySync(path.join(projectRoot, '.npmrc'), path.join(rendererNodejsPath, '.npmrc'));
+}
+
+// 4. Run a clean install inside the layer directory.
+// This respects the versions in your root package.json while ensuring isolation.
+console.log('Building layer dependencies from root version specifications...');
+execSync('npm install --omit=dev --no-package-lock', {
     cwd: rendererNodejsPath,
     stdio: 'inherit'
 });
 
-// 2. Direct copy the private @development packages from the project root node_modules.
-// These were installed by the CI workflow specifically.
-const packagesToManualCopy = [
-    { name: '@abstractplay/renderer', subPath: ['@abstractplay', 'renderer'] },
-    { name: '@abstractplay/gameslib', subPath: ['@abstractplay', 'gameslib'] }
-];
-
-packagesToManualCopy.forEach(pkg => {
-    console.log(`Manually copying ${pkg.name} (development version) to layer...`);
-    const src = path.resolve(projectRoot, 'node_modules', ...pkg.subPath);
-    const dest = path.resolve(rendererNodeModulesPath, ...pkg.subPath);
-    ensureDirSync(path.dirname(dest));
-    copySync(src, dest, { overwrite: true });
-});
-
-console.log(`Layer for renderer and browser dependencies built successfully at ${rendererLayerPath}`);
+console.log(`Layer built successfully at ${rendererLayerPath}`);
