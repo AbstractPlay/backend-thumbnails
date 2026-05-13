@@ -57,11 +57,29 @@ execSync('npm install --omit=dev --no-package-lock', {
 // installed in the root is exactly what ends up in the layer, bypassing any
 // version resolution issues during the sub-folder npm install.
 const packagesToOverride = ['@abstractplay/renderer', '@abstractplay/gameslib'];
-packagesToOverride.forEach(name => {
+for (const name of packagesToOverride) {
     const src = path.resolve(projectRoot, 'node_modules', name);
     const dest = path.resolve(rendererNodejsPath, 'node_modules', name);
+
+    if (!fsExtra.existsSync(src)) {
+        console.warn(`Warning: Local source for ${name} not found at ${src}. Skipping override.`);
+        continue;
+    }
+
     console.log(`Syncing local code for ${name} into layer...`);
     copySync(src, dest, { overwrite: true });
-});
+
+    // Also sync the dependencies of this package from root node_modules to ensure hoisted deps are present
+    const internalPkg = fsExtra.readJsonSync(path.join(src, 'package.json'));
+    if (internalPkg.dependencies) {
+        for (const dep of Object.keys(internalPkg.dependencies)) {
+            const depSrc = path.resolve(projectRoot, 'node_modules', dep);
+            const depDest = path.resolve(rendererNodejsPath, 'node_modules', dep);
+            if (fsExtra.existsSync(depSrc)) {
+                copySync(depSrc, depDest, { overwrite: true });
+            }
+        }
+    }
+}
 
 console.log(`Layer built successfully at ${rendererLayerPath}`);
