@@ -119,7 +119,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
         await page.addScriptTag({ url: "https://renderer.dev.abstractplay.com/APRender.min.js" });
         console.log("Evaluating the render itself")
         await page.evaluate((prefix, context, aprender) => {
-            const opts: IRenderOptions = {prefix, divid: "drawing", colourContext: context};
+            const opts: IRenderOptions = {prefix, divid: "drawing", colourContext: context, contextGlobal: false, coloursGlobal: false};
             (window as any).APRender.render(aprender, opts)
         }, prefix, context, aprender);
         console.log("Evaluating the SVG extraction")
