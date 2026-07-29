@@ -137,6 +137,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
                 Key: `${meta}-${name}.svg`,
                 Body: safeSvg,
                 ContentType: "image/svg+xml",
+                CacheControl: "public, max-age=86400",
             });
             const response = await s3.send(cmd);
             if (response["$metadata"].httpStatusCode !== 200) {
