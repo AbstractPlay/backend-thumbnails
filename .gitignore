@@ -7,4 +7,5 @@ jspm_packages
 /api/*.js
 /utils/*.js
 .vscode/
-bin/
+bin/*
+!bin/install-ap-deps.mjs
