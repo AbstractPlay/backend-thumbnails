@@ -7,7 +7,7 @@
     "clean": "rimraf dist .esbuild .serverless",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-ts": "tsc",
-    "build": "eslint && tsc",
+    "build": "node bin/check-ci-deps.mjs && eslint && tsc",
     "build:layers": "node scripts/build-layers.mjs",
     "deploy-dev": "serverless deploy",
     "deploy-prod": "serverless --stage prod deploy",
@@ -26,8 +26,8 @@
   },
   "homepage": "https://github.com/AbstractPlay/backend-thumbnails#readme",
   "dependencies": {
-    "@abstractplay/gameslib": "1.0.0-ci-30499004629.0",
-    "@abstractplay/renderer": "1.0.0-ci-30491195223.0",
+    "@abstractplay/gameslib": "1.0.0-ci-32783108998.0",
+    "@abstractplay/renderer": "1.0.0-ci-32782926153.0",
     "@aws-sdk/client-dynamodb": "^3.321.1",
     "@aws-sdk/client-s3": "^3.374.0",
     "@aws-sdk/client-ses": "^3.321.1",
@@ -62,6 +62,6 @@
     "typescript": "^5.0.4"
   },
   "overrides": {
-    "@abstractplay/renderer": "1.0.0-ci-30491195223.0"
+    "@abstractplay/renderer": "1.0.0-ci-32782926153.0"
   }
 }
