@@ -9,3 +9,4 @@ jspm_packages
 .vscode/
 bin/*
 !bin/install-ap-deps.mjs
+!bin/check-ci-deps.mjs
