@@ -13,8 +13,7 @@
     "deploy-dev": "serverless deploy",
     "deploy-prod": "serverless --stage prod deploy",
     "full-dev": "npm run clean && npm run build && serverless deploy",
-    "full-prod": "npm run build && serverless --stage prod deploy",
-    "postinstall": "patch-package"
+    "full-prod": "npm run build && serverless --stage prod deploy"
   },
   "author": "Aaron Dalton",
   "license": "MIT",
@@ -59,8 +58,6 @@
     "esbuild": "^0.27.1",
     "eslint": "^8.39.0",
     "fs-extra": "^11.3.4",
-    "patch-package": "^8.0.1",
-    "postinstall-postinstall": "^2.1.0",
     "rimraf": "^6.1.2",
     "serverless": "^3.40.0",
     "serverless-esbuild": "^1.56.1",
