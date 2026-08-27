@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf dist .esbuild .serverless",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test test/lambdaInterop.test.mjs",
     "build-ts": "tsc",
     "build": "node bin/check-ci-deps.mjs && eslint && tsc",
     "build:layers": "node scripts/build-layers.mjs",
+    "test:layers": "npm run build:layers && node scripts/smoke-layer-modules.mjs",
     "deploy-dev": "serverless deploy",
     "deploy-prod": "serverless --stage prod deploy",
     "full-dev": "npm run clean && npm run build && serverless deploy",
@@ -62,6 +63,7 @@
     "typescript": "^5.0.4"
   },
   "overrides": {
+    "nanoid": "3.3.11",
     "@abstractplay/renderer": "1.0.0-ci-32780767588.0"
   }
 }
