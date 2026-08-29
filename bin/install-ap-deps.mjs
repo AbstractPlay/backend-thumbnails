@@ -17,6 +17,8 @@ import { fileURLToPath } from "url";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const LEGACY_CI_DEPS_PATH = path.join(ROOT, "ci-deps.json");
 const PACKAGE_JSON_PATH = path.join(ROOT, "package.json");
+/** gameslib/recranks want nanoid ^5 (ESM-only); pin v3 for Lambda CJS bundling. */
+const NANOID_VERSION = "3.3.11";
 
 function parseArgs(argv) {
   let stage = "dev";
@@ -164,6 +166,10 @@ function syncPackageJson(pkgJson, versions) {
     pkgJson.overrides = pkgJson.overrides ?? {};
     pkgJson.overrides["@abstractplay/renderer"] = versions.renderer;
   }
+
+  pkgJson.dependencies.nanoid = NANOID_VERSION;
+  pkgJson.overrides = pkgJson.overrides ?? {};
+  pkgJson.overrides.nanoid = NANOID_VERSION;
 
   writeJson(PACKAGE_JSON_PATH, pkgJson);
 }
