@@ -15,7 +15,7 @@ custom:
     outExtension:
       ".js": ".mjs"
     platform: "node"
-    target: "node20"
+    target: "node24"
     external:
       - "@abstractplay/renderer"
       - "@abstractplay/gameslib"
@@ -48,7 +48,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs24.x
   versionFunctions: false
   stage: ${opt:stage, "dev"}
   profile: ${param:profile}
@@ -185,19 +185,19 @@ layers:
     name: abstractplay-chromium-${sls:stage}
     description: "Layer for puppeteer-core and @sparticuz/chromium"
     compatibleRuntimes:
-      - nodejs20.x
+      - nodejs24.x
     retain: false
   abstractplayGameslib:
     path: .serverless/layers/abstractplay-gameslib
     name: abstractplay-gameslib-${sls:stage}
     description: "Layer for @abstractplay/gameslib and its runtime dependencies"
     compatibleRuntimes:
-      - nodejs20.x
+      - nodejs24.x
     retain: false
   abstractplayRenderer:
     path: .serverless/layers/abstractplay-renderer
     name: abstractplay-renderer-${sls:stage}
     description: "Layer for @abstractplay/renderer and its runtime dependencies"
     compatibleRuntimes:
-      - nodejs20.x
+      - nodejs24.x
     retain: false

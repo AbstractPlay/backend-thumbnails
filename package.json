@@ -5,15 +5,15 @@
   "type": "module",
   "scripts": {
     "clean": "rimraf dist .esbuild .serverless",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test test/lambdaInterop.test.mjs",
     "build-ts": "tsc",
     "build": "node bin/check-ci-deps.mjs && eslint && tsc",
     "build:layers": "node scripts/build-layers.mjs",
+    "test:layers": "npm run build:layers && node scripts/smoke-layer-modules.mjs",
     "deploy-dev": "serverless deploy",
     "deploy-prod": "serverless --stage prod deploy",
     "full-dev": "npm run clean && npm run build && serverless deploy",
-    "full-prod": "npm run build && serverless --stage prod deploy",
-    "postinstall": "patch-package"
+    "full-prod": "npm run build && serverless --stage prod deploy"
   },
   "author": "Aaron Dalton",
   "license": "MIT",
@@ -25,6 +25,11 @@
     "url": "https://github.com/AbstractPlay/backend-thumbnails/issues"
   },
   "homepage": "https://github.com/AbstractPlay/backend-thumbnails#readme",
+  "engines": {
+    "node": ">=24",
+    "npm": "11.6.2"
+  },
+  "packageManager": "npm@11.6.2",
   "dependencies": {
     "@abstractplay/gameslib": "1.0.0-ci-32783108998.0",
     "@abstractplay/renderer": "1.0.0-ci-32782926153.0",
@@ -38,6 +43,7 @@
     "fflate": "^0.8.1",
     "i18next": "^22.4.15",
     "ion-js": "^5.2.0",
+    "nanoid": "3.3.11",
     "puppeteer-core": "^24.33.0",
     "sharp": "^0.34.5"
   },
@@ -52,9 +58,6 @@
     "esbuild": "^0.27.1",
     "eslint": "^8.39.0",
     "fs-extra": "^11.3.4",
-    "npm": "^9.6.6",
-    "patch-package": "^8.0.1",
-    "postinstall-postinstall": "^2.1.0",
     "rimraf": "^6.1.2",
     "serverless": "^3.40.0",
     "serverless-esbuild": "^1.56.1",

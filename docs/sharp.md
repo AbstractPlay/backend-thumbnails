@@ -1,6 +1,6 @@
 Building and Publishing a Sharp Lambda Layer
 
-This document outlines the process for creating a Sharp Lambda layer that works reliably in AWS Lambda with Node.js 20 runtimes.
+This document outlines the process for creating a Sharp Lambda layer that works reliably in AWS Lambda with Node.js 24 runtimes.
 
 1. Why Build Your Own Layer
 
@@ -19,7 +19,7 @@ docker run -it amazonlinux:2023 bash
 Install prerequisites
 
 yum install -y tar gzip make gcc-c++ python3
-curl -sL https://rpm.nodesource.com/setup_20.x | bash -
+curl -sL https://rpm.nodesource.com/setup_24.x | bash -
 yum install -y nodejs
 
 Create the layer directory
@@ -44,9 +44,9 @@ Run this from your host machine:
 
 aws lambda publish-layer-version
   --layer-name sharp
-  --description "Sharp for Node.js 20 Lambda"
+  --description "Sharp for Node.js 24 Lambda"
   --zip-file fileb://layer.zip
-  --compatible-runtimes nodejs20.x
+  --compatible-runtimes nodejs24.x
 
 This returns an ARN like:
 

@@ -2,6 +2,10 @@
 node_modules
 jspm_packages
 
+# Build output
+dist
+.esbuild
+
 # Serverless directories
 .serverless
 /api/*.js
