@@ -65,6 +65,7 @@
     "typescript": "^5.0.4"
   },
   "overrides": {
-    "@abstractplay/renderer": "1.0.0-ci-32782926153.0"
+    "@abstractplay/renderer": "1.0.0-ci-32782926153.0",
+    "nanoid": "3.3.11"
   }
 }
