@@ -7,22 +7,8 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
-import { createRequire } from "node:module";
-const require = createRequire(import.meta.url);
-const pkg = require("@abstractplay/renderer");
+import { addPrefix } from "@abstractplay/renderer";
 import type { IRenderOptions, APRenderRep } from "@abstractplay/renderer";
-
-// Unpack CommonJS/ESM interop robustly
-const renderer: any = pkg?.addPrefix ? pkg : (pkg?.default?.addPrefix ? pkg.default : (pkg?.default ?? pkg));
-const { render, addPrefix } = renderer;
-
-// Safety check: If this fails, the deployment is using an outdated/bundled version of the package.
-if (typeof addPrefix !== 'function') {
-    const keys = Object.keys(renderer || {});
-    const msg = `@abstractplay/renderer version mismatch: 'addPrefix' missing. Found: ${keys.join(', ')}`;
-    console.error("FATAL:", msg);
-    throw new Error(msg);
-}
 
 import { Buffer } from "node:buffer";
 import { customAlphabet } from "nanoid";
@@ -129,7 +115,7 @@ export const handler = async (event: SQSEvent): Promise<void> => {
         });
         if (svgString !== null) {
             console.log("Prefixing the SVG")
-            const prefixed = addPrefix(svgString, {prefix});
+            const prefixed = addPrefix(svgString, { prefix } as IRenderOptions);
             console.log("Escaping nonbreaking spaces");
             const safeSvg = prefixed.replace(/&nbsp;/g, '&#160;');
             const cmd = new PutObjectCommand({

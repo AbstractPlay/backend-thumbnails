@@ -188,7 +188,8 @@ function buildLayer(config) {
     const pkg = readJsonSync(path.join(projectRoot, 'package.json'));
     const layerPkg = {
         name: `${config.name}-layer`,
-        version: '1.0.0',
+        version: "1.0.0",
+        type: "module",
         dependencies: {},
     };
 
